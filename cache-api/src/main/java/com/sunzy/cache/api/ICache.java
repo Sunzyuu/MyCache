@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 缓存接口
+ * 缓存接口 继承Map，后续后续修改put()函数即可实现各种驱逐策略
  * @author binbin.hou
  * @since 0.0.1
  */
@@ -47,16 +47,16 @@ public interface ICache<K, V> extends Map<K, V> {
      * @return this
      * @since 0.0.3
      */
-//    ICache<K, V> expire(final K key, final long timeInMills);
+    ICache<K, V> expire(final K key, final long timeInMills);
 
-//    /**
-//     * 在指定的时间过期
-//     * @param key key
-//     * @param timeInMills 时间戳
-//     * @return this
-//     * @since 0.0.3
-//     */
-//    ICache<K, V> expireAt(final K key, final long timeInMills);
+    /**
+     * 在指定的时间过期
+     * @param key key
+     * @param timeInMills 时间戳
+     * @return this
+     * @since 0.0.3
+     */
+    ICache<K, V> expireAt(final K key, final long timeInMills);
 //
 //    /**
 //     * 获取缓存的过期处理类

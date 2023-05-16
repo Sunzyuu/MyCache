@@ -3,7 +3,10 @@ package com.sunzy.cache.core.core;
 import com.sunzy.cache.annotation.CacheInterceptor;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICacheEvict;
+import com.sunzy.cache.api.ICacheExpire;
 import com.sunzy.cache.core.evict.CacheEvictContext;
+import com.sunzy.cache.core.expire.CacheExpire;
+import com.sunzy.cache.core.expire.CacheExpireSort;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,10 +31,25 @@ public class Cache<K,V> implements ICache<K,V> {
      */
     private ICacheEvict<K,V> evict;
 
+    /**
+     * 过期策略
+     * 暂时不做暴露
+     * @since 0.0.3
+     */
+    private ICacheExpire<K,V> expire;
+
+    public void init() {
+        // 初始化过期策略
+//        this.expire = new CacheExpire<>(this);
+        // 使用优化后的过期策略
+        this.expire = new CacheExpireSort<>(this);
+    }
+
     public Cache(CacheContext<K, V> context) {
         this.map = context.map();
         this.sizeLimit = context.size();
         this.evict = context.cacheEvict();
+        this.init();
     }
 
     public Cache(Map<K, V> map, int sizeLimit, ICacheEvict<K, V> evict) {
@@ -68,6 +86,26 @@ public class Cache<K,V> implements ICache<K,V> {
     private boolean isSizeLimit() {
         final int currentSize = this.size();
         return currentSize >= this.sizeLimit;
+    }
+
+
+    /**
+     * 为了便于处理，我们将多久之后过期，进行计算。
+     * 将两个问题变成同一个问题，在什么时候过期的问题。
+     * @param key         key
+     * @param timeInMills 毫秒时间之后过期
+     * @return
+     */
+    @Override
+    public ICache<K, V> expire(K key, long timeInMills) {
+        long expireTime = System.currentTimeMillis() + timeInMills;
+        return this.expireAt(key, expireTime);
+    }
+
+    @Override
+    public ICache<K, V> expireAt(K key, long timeInMills) {
+        this.expire.expire(key, timeInMills);
+        return this;
     }
 
     @Override
@@ -157,5 +195,4 @@ public class Cache<K,V> implements ICache<K,V> {
     public Set<Entry<K, V>> entrySet() {
         return map.entrySet();
     }
-
 }
