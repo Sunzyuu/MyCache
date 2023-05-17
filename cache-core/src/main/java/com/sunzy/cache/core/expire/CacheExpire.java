@@ -91,6 +91,11 @@ public class CacheExpire<K, V> implements ICacheExpire<K, V> {
         }
     }
 
+    @Override
+    public Long expireTime(K key) {
+        return null;
+    }
+
 
     private void expireKey(final K key, final Long expireAt) {
         if(expireAt == null){

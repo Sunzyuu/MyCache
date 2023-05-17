@@ -17,5 +17,18 @@ public interface ICacheExpire<K, V> {
     void expire(K key, final long expireAt);
 
 
+    /**
+     * 刷新过期时间
+     * @param keyList
+     */
     void refreshExpired(final Collection<K> keyList);
+
+
+    /**
+     * 待过期的 key
+     * 不存在，则返回 null
+     * @param key 待过期的 key
+     * @return 结果
+     */
+    Long expireTime(final K key);
 }

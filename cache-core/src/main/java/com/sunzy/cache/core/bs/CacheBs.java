@@ -3,9 +3,13 @@ package com.sunzy.cache.core.bs;
 import com.github.houbb.heaven.util.common.ArgUtil;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICacheEvict;
+import com.sunzy.cache.api.ICacheLoad;
+import com.sunzy.cache.api.ICachePersist;
 import com.sunzy.cache.core.core.Cache;
 import com.sunzy.cache.core.core.CacheContext;
 import com.sunzy.cache.core.evict.CacheEvicts;
+import com.sunzy.cache.core.load.CacheLoads;
+import com.sunzy.cache.core.persist.CachePersists;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +87,24 @@ public class CacheBs<K, V>{
     }
 
     /**
+     * 加载策略 默认为nono
+     * @since 0.0.7
+     */
+    private ICacheLoad<K,V> load = CacheLoads.none();
+
+    /**
+     * 持久化实现策略
+     * @since 0.0.8
+     */
+    private ICachePersist<K,V> persist = CachePersists.dbJson("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\test.rdb");
+
+
+    public CacheBs<K, V> load(ICacheLoad<K, V> load) {
+        this.load = load;
+        return this;
+    }
+
+    /**
      * 使用链式创建缓存客户端
      * @return
      */
@@ -91,7 +113,6 @@ public class CacheBs<K, V>{
         context.cacheEvict(evict);
         context.map(map);
         context.size(size);
-
         return new Cache<>(context);
     }
 }

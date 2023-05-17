@@ -1,14 +1,17 @@
 package com.sunzy.cache.core.core;
 
 import com.sunzy.cache.annotation.CacheInterceptor;
-import com.sunzy.cache.api.ICache;
-import com.sunzy.cache.api.ICacheEvict;
-import com.sunzy.cache.api.ICacheExpire;
+import com.sunzy.cache.api.*;
 import com.sunzy.cache.core.evict.CacheEvictContext;
 import com.sunzy.cache.core.expire.CacheExpire;
 import com.sunzy.cache.core.expire.CacheExpireSort;
+import com.sunzy.cache.core.load.CacheLoadNone;
+import com.sunzy.cache.core.load.CacheLoads;
+import com.sunzy.cache.core.persist.CachePersists;
+import com.sunzy.cache.core.persist.InnerCachePersist;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,17 +41,59 @@ public class Cache<K,V> implements ICache<K,V> {
      */
     private ICacheExpire<K,V> expire;
 
+
+    /**
+     * 加载类
+     * @since 0.0.7
+     */
+    private ICacheLoad<K,V> load;
+
+    private ICachePersist<K, V> persist;
+
+    public void setLoad(ICacheLoad<K, V> load) {
+        this.load = load;
+    }
+
+    public ICacheLoad<K, V> getLoad() {
+        return load;
+    }
+
+    @Override
+    public ICachePersist<K, V> persist() {
+        return this.persist;
+    }
+
+
+    /**
+     * 设置持久化策略
+     * @param persist 持久化
+     * @since 0.0.8
+     */
+    public void persist(ICachePersist<K, V> persist) {
+        this.persist = persist;
+    }
+
+
     public void init() {
         // 初始化过期策略
 //        this.expire = new CacheExpire<>(this);
         // 使用优化后的过期策略
         this.expire = new CacheExpireSort<>(this);
+
+        // 加载磁盘数据
+        this.load.load(this);
+
+        if(persist != null){
+            new InnerCachePersist<K, V>(this, persist);
+        }
     }
 
     public Cache(CacheContext<K, V> context) {
         this.map = context.map();
         this.sizeLimit = context.size();
         this.evict = context.cacheEvict();
+        this.load = CacheLoads.json("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
+        this.persist = CachePersists.dbJson("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
         this.init();
     }
 
@@ -56,6 +101,17 @@ public class Cache<K,V> implements ICache<K,V> {
         this.map = map;
         this.sizeLimit = sizeLimit;
         this.evict = evict;
+    }
+
+
+    @Override
+    public ICacheLoad<K, V> load() {
+        return load;
+    }
+
+    public Cache<K, V> load(ICacheLoad<K, V> load) {
+        this.load = load;
+        return this;
     }
 
     /**
@@ -109,6 +165,11 @@ public class Cache<K,V> implements ICache<K,V> {
     }
 
     @Override
+    public ICacheExpire<K, V> expire() {
+        return this.expire;
+    }
+
+    @Override
     @CacheInterceptor(refresh = true)
     public int size() {
         return map.size();
@@ -135,6 +196,10 @@ public class Cache<K,V> implements ICache<K,V> {
 
     @Override
     public V get(Object key) {
+        // 为了保证数据的可用性，在获取之前刷新过期时间
+        //1. 刷新所有过期信息
+        K genericKey = (K) key;
+        this.expire.refreshExpired(Collections.singletonList(genericKey));
         return map.get(key);
     }
 
