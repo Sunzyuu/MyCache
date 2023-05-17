@@ -9,11 +9,9 @@ import com.sunzy.cache.core.load.CacheLoadNone;
 import com.sunzy.cache.core.load.CacheLoads;
 import com.sunzy.cache.core.persist.CachePersists;
 import com.sunzy.cache.core.persist.InnerCachePersist;
+import com.sunzy.cache.core.support.remove.CacheRemoveListeners;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Cache<K,V> implements ICache<K,V> {
 
@@ -50,9 +48,11 @@ public class Cache<K,V> implements ICache<K,V> {
 
     private ICachePersist<K, V> persist;
 
-    public void setLoad(ICacheLoad<K, V> load) {
-        this.load = load;
-    }
+    /**
+     * 删除监听类
+     * @since 0.0.6
+     */
+    private List<ICacheRemoveListener<K,V>> removeListeners;
 
     public ICacheLoad<K, V> getLoad() {
         return load;
@@ -76,9 +76,9 @@ public class Cache<K,V> implements ICache<K,V> {
 
     public void init() {
         // 初始化过期策略
-//        this.expire = new CacheExpire<>(this);
+        this.expire = new CacheExpire<>(this);
         // 使用优化后的过期策略
-        this.expire = new CacheExpireSort<>(this);
+//        this.expire = new CacheExpireSort<>(this);
 
         // 加载磁盘数据
         this.load.load(this);
@@ -94,6 +94,7 @@ public class Cache<K,V> implements ICache<K,V> {
         this.evict = context.cacheEvict();
         this.load = CacheLoads.json("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
         this.persist = CachePersists.dbJson("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
+        this.removeListeners = CacheRemoveListeners.defaults();
         this.init();
     }
 
@@ -167,6 +168,16 @@ public class Cache<K,V> implements ICache<K,V> {
     @Override
     public ICacheExpire<K, V> expire() {
         return this.expire;
+    }
+
+    @Override
+    public List<ICacheRemoveListener<K, V>> removeListeners() {
+        return removeListeners;
+    }
+
+    public Cache<K, V> removeListeners(List<ICacheRemoveListener<K, V>> removeListeners) {
+        this.removeListeners = removeListeners;
+        return this;
     }
 
     @Override

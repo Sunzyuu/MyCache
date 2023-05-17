@@ -65,12 +65,12 @@ public interface ICache<K, V> extends Map<K, V> {
      */
     ICacheExpire<K,V> expire();
 
-//    /**
-//     * 删除监听类列表
-//     * @return 监听器列表
-//     * @since 0.0.6
-//     */
-//    List<ICacheRemoveListener<K,V>> removeListeners();
+    /**
+     * 删除监听类列表
+     * @return 监听器列表
+     * @since 0.0.6
+     */
+    List<ICacheRemoveListener<K,V>> removeListeners();
 //
 //    /**
 //     * 慢日志监听类列表

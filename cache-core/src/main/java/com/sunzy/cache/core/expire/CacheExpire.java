@@ -4,6 +4,10 @@ import com.github.houbb.heaven.util.util.CollectionUtil;
 import com.github.houbb.heaven.util.util.MapUtil;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICacheExpire;
+import com.sunzy.cache.api.ICacheRemoveListener;
+import com.sunzy.cache.api.ICacheRemoveListenerContext;
+import com.sunzy.cache.core.constant.enums.CacheRemoveType;
+import com.sunzy.cache.core.support.remove.CacheRemoveListenerContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -106,9 +110,15 @@ public class CacheExpire<K, V> implements ICacheExpire<K, V> {
         if(currentTime >= expireAt){
             expireMap.remove(key);
             // 再移除缓冲的数据
-            cache.remove(key);
+            V removeValue = cache.remove(key);
 
             // todo:添加淘汰监听器
+            ICacheRemoveListenerContext<K, V> listenerContext = CacheRemoveListenerContext.<K, V>newInstance().
+                    key(key).
+                    value(removeValue).type(CacheRemoveType.EXPIRE.code());
+            for (ICacheRemoveListener<K, V> listener : cache.removeListeners()) {
+                listener.listen(listenerContext);
+            }
         }
     }
 }
