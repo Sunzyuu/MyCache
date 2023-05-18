@@ -3,7 +3,7 @@ package com.sunzy.cache.core.evict;
 import com.sunzy.cache.api.*;
 import com.sunzy.cache.core.common.CacheEntry;
 import com.sunzy.cache.core.constant.enums.CacheRemoveType;
-import com.sunzy.cache.core.support.remove.CacheRemoveListenerContext;
+import com.sunzy.cache.core.support.listener.remove.CacheRemoveListenerContext;
 
 import java.util.LinkedList;
 import java.util.Queue;

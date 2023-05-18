@@ -71,14 +71,14 @@ public interface ICache<K, V> extends Map<K, V> {
      * @since 0.0.6
      */
     List<ICacheRemoveListener<K,V>> removeListeners();
-//
-//    /**
-//     * 慢日志监听类列表
-//     * @return 监听器列表
-//     * @since 0.0.9
-//     */
-//    List<ICacheSlowListener> slowListeners();
-//
+
+    /**
+     * 慢日志监听类列表
+     * @return 监听器列表
+     * @since 0.0.9
+     */
+    List<ICacheSlowListener> slowListeners();
+
     /**
      * 加载信息
      * @return 加载信息
@@ -86,7 +86,6 @@ public interface ICache<K, V> extends Map<K, V> {
      */
     ICacheLoad<K,V> load();
 
-    ICacheLoad<K,V> getLoad();
 
     /**
      * 持久化类

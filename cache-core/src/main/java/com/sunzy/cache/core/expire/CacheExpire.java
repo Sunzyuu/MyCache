@@ -7,7 +7,7 @@ import com.sunzy.cache.api.ICacheExpire;
 import com.sunzy.cache.api.ICacheRemoveListener;
 import com.sunzy.cache.api.ICacheRemoveListenerContext;
 import com.sunzy.cache.core.constant.enums.CacheRemoveType;
-import com.sunzy.cache.core.support.remove.CacheRemoveListenerContext;
+import com.sunzy.cache.core.support.listener.remove.CacheRemoveListenerContext;
 
 import java.util.Collection;
 import java.util.HashMap;

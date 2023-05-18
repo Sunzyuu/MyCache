@@ -14,4 +14,8 @@ public class CachePersists {
     public static <K,V> ICachePersist<K,V> dbJson(final String path) {
         return new CachePersistDbJson<>(path);
     }
+
+    public static <V, K> ICachePersist<K,V> none() {
+        return null;
+    }
 }

@@ -1,6 +1,5 @@
-package com.sunzy.cache.core.support.remove;
+package com.sunzy.cache.core.support.listener.remove;
 
-import com.sunzy.cache.api.ICacheRemoveListener;
 import com.sunzy.cache.api.ICacheRemoveListenerContext;
 
 public class CacheRemoveListenerContext<K, V> implements ICacheRemoveListenerContext<K, V> {

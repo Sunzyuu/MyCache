@@ -4,12 +4,10 @@ import com.sunzy.cache.annotation.CacheInterceptor;
 import com.sunzy.cache.api.*;
 import com.sunzy.cache.core.evict.CacheEvictContext;
 import com.sunzy.cache.core.expire.CacheExpire;
-import com.sunzy.cache.core.expire.CacheExpireSort;
-import com.sunzy.cache.core.load.CacheLoadNone;
 import com.sunzy.cache.core.load.CacheLoads;
 import com.sunzy.cache.core.persist.CachePersists;
 import com.sunzy.cache.core.persist.InnerCachePersist;
-import com.sunzy.cache.core.support.remove.CacheRemoveListeners;
+import com.sunzy.cache.core.proxy.CacheProxy;
 
 import java.util.*;
 
@@ -39,6 +37,10 @@ public class Cache<K,V> implements ICache<K,V> {
      */
     private ICacheExpire<K,V> expire;
 
+    /**
+     * 慢操作日志监听类
+     */
+    private List<ICacheSlowListener> slowListeners;
 
     /**
      * 加载类
@@ -54,9 +56,6 @@ public class Cache<K,V> implements ICache<K,V> {
      */
     private List<ICacheRemoveListener<K,V>> removeListeners;
 
-    public ICacheLoad<K, V> getLoad() {
-        return load;
-    }
 
     @Override
     public ICachePersist<K, V> persist() {
@@ -73,6 +72,16 @@ public class Cache<K,V> implements ICache<K,V> {
         this.persist = persist;
     }
 
+    /**
+     * 设置驱除策略
+     * @param cacheEvict 驱除策略
+     * @return this
+     * @since 0.0.8
+     */
+    public Cache<K, V> evict(ICacheEvict<K, V> cacheEvict) {
+        this.evict = cacheEvict;
+        return this;
+    }
 
     public void init() {
         // 初始化过期策略
@@ -88,15 +97,7 @@ public class Cache<K,V> implements ICache<K,V> {
         }
     }
 
-    public Cache(CacheContext<K, V> context) {
-        this.map = context.map();
-        this.sizeLimit = context.size();
-        this.evict = context.cacheEvict();
-        this.load = CacheLoads.json("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
-        this.persist = CachePersists.dbJson("E:\\Sunzh\\java\\MyCache\\cache-core\\src\\main\\resources\\1.rdb");
-        this.removeListeners = CacheRemoveListeners.defaults();
-        this.init();
-    }
+    public Cache() {}
 
     public Cache(Map<K, V> map, int sizeLimit, ICacheEvict<K, V> evict) {
         this.map = map;
@@ -154,18 +155,23 @@ public class Cache<K,V> implements ICache<K,V> {
      * @return
      */
     @Override
+    @CacheInterceptor
     public ICache<K, V> expire(K key, long timeInMills) {
         long expireTime = System.currentTimeMillis() + timeInMills;
-        return this.expireAt(key, expireTime);
+        // 使用代理调用
+        Cache<K,V> cachePoxy = (Cache<K, V>) CacheProxy.getProxy(this);
+        return cachePoxy.expireAt(key, expireTime);
     }
 
     @Override
+    @CacheInterceptor(aof = true)
     public ICache<K, V> expireAt(K key, long timeInMills) {
         this.expire.expire(key, timeInMills);
         return this;
     }
 
     @Override
+    @CacheInterceptor
     public ICacheExpire<K, V> expire() {
         return this.expire;
     }
@@ -173,6 +179,16 @@ public class Cache<K,V> implements ICache<K,V> {
     @Override
     public List<ICacheRemoveListener<K, V>> removeListeners() {
         return removeListeners;
+    }
+
+    @Override
+    public List<ICacheSlowListener> slowListeners() {
+        return slowListeners;
+    }
+
+    public Cache<K, V> slowListeners(List<ICacheSlowListener> listeners) {
+        this.slowListeners = listeners;
+        return this;
     }
 
     public Cache<K, V> removeListeners(List<ICacheRemoveListener<K, V>> removeListeners) {
@@ -206,6 +222,7 @@ public class Cache<K,V> implements ICache<K,V> {
 
 
     @Override
+    @CacheInterceptor
     public V get(Object key) {
         // 为了保证数据的可用性，在获取之前刷新过期时间
         //1. 刷新所有过期信息
@@ -221,6 +238,7 @@ public class Cache<K,V> implements ICache<K,V> {
      * @return
      */
     @Override
+//    @CacheInterceptor
     public V put(K key, V value) {
         //1.1 尝试驱除
         CacheEvictContext<K,V> context = new CacheEvictContext<>();
