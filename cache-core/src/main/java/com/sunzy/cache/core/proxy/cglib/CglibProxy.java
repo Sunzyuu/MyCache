@@ -36,7 +36,6 @@ public class CglibProxy implements MethodInterceptor, ICacheProxy {
 
     @Override
     public Object intercept(Object o, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
-        System.out.println("proxy object invoke: " + method.getName());
         ICacheProxyBsContext context = CacheProxyBsContext.newInstance()
                 .method(method).params(params).target(target);
         // 通过引导增强器类在原方法基础上 执行一些额外的操作

@@ -1,13 +1,14 @@
 package com.sunzy.cache.core.core;
 
+import com.github.houbb.heaven.util.lang.ObjectUtil;
 import com.sunzy.cache.annotation.CacheInterceptor;
 import com.sunzy.cache.api.*;
+import com.sunzy.cache.core.constant.enums.CacheRemoveType;
 import com.sunzy.cache.core.evict.CacheEvictContext;
-import com.sunzy.cache.core.expire.CacheExpire;
-import com.sunzy.cache.core.load.CacheLoads;
-import com.sunzy.cache.core.persist.CachePersists;
+import com.sunzy.cache.core.expire.CacheExpireSort;
 import com.sunzy.cache.core.persist.InnerCachePersist;
 import com.sunzy.cache.core.proxy.CacheProxy;
+import com.sunzy.cache.core.support.listener.remove.CacheRemoveListenerContext;
 
 import java.util.*;
 
@@ -85,9 +86,9 @@ public class Cache<K,V> implements ICache<K,V> {
 
     public void init() {
         // 初始化过期策略
-        this.expire = new CacheExpire<>(this);
+//        this.expire = new CacheExpire<>(this);
         // 使用优化后的过期策略
-//        this.expire = new CacheExpireSort<>(this);
+        this.expire = new CacheExpireSort<>(this);
 
         // 加载磁盘数据
         this.load.load(this);
@@ -238,12 +239,25 @@ public class Cache<K,V> implements ICache<K,V> {
      * @return
      */
     @Override
-//    @CacheInterceptor
+    @CacheInterceptor(aof = true)
     public V put(K key, V value) {
         //1.1 尝试驱除
         CacheEvictContext<K,V> context = new CacheEvictContext<>();
         context.key(key).size(sizeLimit).cache(this);
-        evict.evict(context);
+        ICacheEntry<K, V> evictEntry = evict.evict(context);
+
+        // 添加拦截器调用
+        if(ObjectUtil.isNotNull(evictEntry)){
+            // 执行淘汰监听器
+            ICacheRemoveListenerContext<K,V> removeListenerContext = CacheRemoveListenerContext.<K,V>newInstance().key(evictEntry.key())
+                    .value(evictEntry.value())
+                    .type(CacheRemoveType.EVICT.code());
+            for(ICacheRemoveListener<K,V> listener : context.cache().removeListeners()) {
+                listener.listen(removeListenerContext);
+            }
+        }
+
+
         //2. 判断驱除后的信息
         if(isSizeLimit()) {
             throw new RuntimeException("当前队列已满，数据添加失败！");

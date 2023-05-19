@@ -9,8 +9,9 @@ import com.sunzy.cache.core.model.PersistEntry;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-public class CachePersistDbJson<K, V> implements ICachePersist<K, V> {
+public class CachePersistDbJson<K, V> extends CachePersistAdaptor<K, V> {
 
     /**
      * 数据库路径

@@ -4,6 +4,10 @@ import com.github.houbb.heaven.util.util.CollectionUtil;
 import com.github.houbb.heaven.util.util.MapUtil;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICacheExpire;
+import com.sunzy.cache.api.ICacheRemoveListener;
+import com.sunzy.cache.api.ICacheRemoveListenerContext;
+import com.sunzy.cache.core.constant.enums.CacheRemoveType;
+import com.sunzy.cache.core.support.listener.remove.CacheRemoveListenerContext;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -23,7 +27,6 @@ public class CacheExpireSort<K, V> implements ICacheExpire<K, V> {
      * 单次清空数量限制
      */
     private static final int LIMIT = 100;
-
     /**
      * 使用按照时间的缓存处理
      */
@@ -48,46 +51,63 @@ public class CacheExpireSort<K, V> implements ICacheExpire<K, V> {
      * 初始化定时任务线程信息
      */
     private void init(){
-        EXECUTOR_SERVICE.scheduleAtFixedRate(new ExpireThread(), 1, 1, TimeUnit.SECONDS);
+        EXECUTOR_SERVICE.scheduleAtFixedRate(new ExpireThread(), 2, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * 定时执行任务
+     * @since 0.0.3
+     */
     private class ExpireThread implements Runnable {
-
         @Override
         public void run() {
-            // 如果sortMap为空，说明
-            if(MapUtil.isEmpty(sortMap)){
+            System.out.println(sortMap.size());
+            //1.判断是否为空
+            if(MapUtil.isEmpty(sortMap)) {
                 return;
             }
 
-            // 获取key并处理
+            //2. 获取 key 进行处理
             int count = 0;
-            for (Map.Entry<Long, List<K>> entry : sortMap.entrySet()) {
+            for(Map.Entry<Long, List<K>> entry : sortMap.entrySet()) {
                 final Long expireAt = entry.getKey();
                 List<K> expireKeys = entry.getValue();
-                //判断集合是否为空
-                if(CollectionUtil.isEmpty(expireKeys)){
+
+                // 判断过期keys是否为空
+                if(CollectionUtil.isEmpty(expireKeys)) {
                     sortMap.remove(expireAt);
                     continue;
                 }
-                if(count > LIMIT){
+                if(count >= LIMIT) {
                     return;
                 }
-                long currentTimeMillis = System.currentTimeMillis();
-                if(currentTimeMillis >= expireAt){
+
+                // 删除的逻辑处理
+                long currentTime = System.currentTimeMillis();
+                if(currentTime >= expireAt) {
                     Iterator<K> iterator = expireKeys.iterator();
-                    while(iterator.hasNext()){
+                    while (iterator.hasNext()) {
                         K key = iterator.next();
-                        // 先移除集合中元素
+                        // 先移除本身
                         iterator.remove();
-                        // 删除过期map中的元素
                         expireMap.remove(key);
-                        // 删除缓存中元素
-                        cache.remove(key);
+
+                        // 再移除缓存，后续可以通过惰性删除做补偿
+                        V evictValue = cache.remove(key);
+
+                        ICacheRemoveListenerContext<K,V> removeListenerContext = CacheRemoveListenerContext
+                                .<K,V>newInstance()
+                                .key(key)
+                                .value(evictValue)
+                                .type(CacheRemoveType.EXPIRE.code());
+                        for(ICacheRemoveListener<K,V> listener : cache.removeListeners()) {
+                            listener.listen(removeListenerContext);
+                        }
+
                         count++;
                     }
                 } else {
-                    //没有过期信息 直接结束本次任务
+                    // 直接跳过，没有过期的信息
                     return;
                 }
             }
@@ -97,31 +117,56 @@ public class CacheExpireSort<K, V> implements ICacheExpire<K, V> {
     @Override
     public void expire(K key, long expireAt) {
         List<K> keys = sortMap.get(expireAt);
-        if (keys == null) {
+        if(keys == null) {
             keys = new ArrayList<>();
         }
         keys.add(key);
 
+        // 设置对应的信息
         sortMap.put(expireAt, keys);
         expireMap.put(key, expireAt);
     }
 
-
-
     @Override
     public void refreshExpired(Collection<K> keyList) {
-        if(CollectionUtil.isEmpty(keyList)){
+        if(CollectionUtil.isEmpty(keyList)) {
             return;
         }
-        // 判断大小，小的作为外循环。一般都是过期的 keys 比较小。
-        if(keyList.size() <= expireMap.size()){
-            for (K key : keyList) {
-                Long expireAt = expireMap.get(key);
-                expireKey(key, expireAt);
+
+        // 这样维护两套的代价太大，后续优化，暂时不用。
+        // 判断大小，小的作为外循环
+        final int expireSize = expireMap.size();
+        if(expireSize <= keyList.size()) {
+            // 一般过期的数量都是较少的
+            for(Map.Entry<K,Long> entry : expireMap.entrySet()) {
+                K key = entry.getKey();
+
+                // 这里直接执行过期处理，不再判断是否存在于集合中。
+                // 因为基于集合的判断，时间复杂度为 O(n)
+                this.removeExpiredKey(key);
             }
         } else {
-            for(Map.Entry<K, Long> entry : expireMap.entrySet()) {
-                this.expireKey(entry.getKey(), entry.getValue());
+            for(K key : keyList) {
+                this.removeExpiredKey(key);
+            }
+        }
+    }
+
+    /**
+     * 移除过期信息
+     * @param key key
+     * @since 0.0.10
+     */
+    private void removeExpiredKey(final K key) {
+        Long expireTime = expireMap.get(key);
+        if(expireTime != null) {
+            final long currentTime = System.currentTimeMillis();
+            if(currentTime >= expireTime) {
+                expireMap.remove(key);
+
+                List<K> expireKeys = sortMap.get(expireTime);
+                expireKeys.remove(key);
+                sortMap.put(expireTime, expireKeys);
             }
         }
     }
@@ -129,21 +174,5 @@ public class CacheExpireSort<K, V> implements ICacheExpire<K, V> {
     @Override
     public Long expireTime(K key) {
         return expireMap.get(key);
-    }
-
-
-    private void expireKey(final K key, final Long expireAt) {
-        if(expireAt == null){
-            return;
-        }
-        long currentTime = System.currentTimeMillis();
-        // 当前时间超过了指定过期时间
-        if(currentTime >= expireAt){
-            expireMap.remove(key);
-            // 再移除缓冲的数据
-            cache.remove(key);
-
-            // todo:添加淘汰监听器
-        }
     }
 }

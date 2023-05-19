@@ -113,12 +113,13 @@ public class CacheExpire<K, V> implements ICacheExpire<K, V> {
             V removeValue = cache.remove(key);
 
             // todo:添加淘汰监听器
-            ICacheRemoveListenerContext<K, V> listenerContext = CacheRemoveListenerContext.<K, V>newInstance().
-                    key(key).
-                    value(removeValue).type(CacheRemoveType.EXPIRE.code());
-            for (ICacheRemoveListener<K, V> listener : cache.removeListeners()) {
-                listener.listen(listenerContext);
-            }
+//            ICacheRemoveListenerContext<K, V> listenerContext = CacheRemoveListenerContext.<K, V>newInstance().
+//                    key(key).
+//                    value(removeValue).
+//                    type(CacheRemoveType.EXPIRE.code());
+//            for (ICacheRemoveListener<K, V> listener : cache.removeListeners()) {
+//                listener.listen(listenerContext);
+//            }
         }
     }
 }

@@ -15,7 +15,18 @@ public class CachePersists {
         return new CachePersistDbJson<>(path);
     }
 
+    /**
+     * 无操作
+     * @param <V>
+     * @param <K>
+     * @return
+     */
     public static <V, K> ICachePersist<K,V> none() {
         return null;
+    }
+
+
+    public static ICachePersist<String, String> aof(String dbPath) {
+        return new CachePersistAOF<>(dbPath);
     }
 }

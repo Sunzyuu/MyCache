@@ -119,6 +119,11 @@ public class CacheBs<K, V>{
         return this;
     }
 
+    public CacheBs<K, V> persist(ICachePersist<K, V> persist) {
+        this.persist = persist;
+        return this;
+    }
+
     /**
      * 添加监听器
      * @param removeListener
@@ -166,4 +171,6 @@ public class CacheBs<K, V>{
         cache.init();
         return CacheProxy.getProxy(cache);
     }
+
+
 }

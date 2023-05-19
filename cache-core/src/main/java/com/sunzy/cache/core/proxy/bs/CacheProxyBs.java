@@ -3,6 +3,8 @@ package com.sunzy.cache.core.proxy.bs;
 import com.sunzy.cache.annotation.CacheInterceptor;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICacheInterceptor;
+import com.sunzy.cache.api.ICachePersist;
+import com.sunzy.cache.core.persist.CachePersistAOF;
 import com.sunzy.cache.core.support.interceptor.CacheInterceptorContext;
 import com.sunzy.cache.core.support.interceptor.CacheInterceptors;
 
@@ -34,6 +36,11 @@ public class CacheProxyBs {
     @SuppressWarnings("all")
     private final List<ICacheInterceptor> refreshInterceptors = CacheInterceptors.defaultRefreshList();
 
+    /**
+     * 持久化监听器
+     */
+    @SuppressWarnings("all")
+    private final ICacheInterceptor persistInterceptor = CacheInterceptors.aof();
 
     public static CacheProxyBs newInstance(){
         return new CacheProxyBs();
@@ -96,6 +103,16 @@ public class CacheProxyBs {
                     } else {
                         interceptor.after(interceptorContext);
                     }
+                }
+            }
+
+            // aof追加
+            ICachePersist cachePersist = cache.persist();
+            if(cacheInterceptor.aof() && (cachePersist instanceof CachePersistAOF)){
+                if(before){
+                    persistInterceptor.before(interceptorContext);
+                } else {
+                    persistInterceptor.after(interceptorContext);
                 }
             }
         }
