@@ -53,13 +53,24 @@ public class CacheEvicts {
 
 
     /**
-     * lrun基于LinkedHashMap的驱逐策略
+     * lru基于LinkedHashMap的驱逐策略
      * @param <K>
      * @param <V>
      * @return
      */
     public static <K, V> ICacheEvict<K, V>linkedListHashMapLru() {
         return new CacheEvictLruLinkedHashMap<>();
+    }
+
+
+    /**
+     * lru基于two queue的驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V> cacheEvict2Q() {
+        return new CacheEvictLru2Q<>();
     }
 
 

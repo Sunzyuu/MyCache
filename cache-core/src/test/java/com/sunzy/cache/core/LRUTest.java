@@ -10,7 +10,8 @@ public class LRUTest {
                 .size(3)
 //                .evict(CacheEvicts.lru())
 //                .evict(CacheEvicts.doubleListLru())
-                .evict(CacheEvicts.linkedListHashMapLru())
+//                .evict(CacheEvicts.linkedListHashMapLru())
+                .evict(CacheEvicts.cacheEvict2Q())
                 .build();
 
         cache.put("A", "hello");
