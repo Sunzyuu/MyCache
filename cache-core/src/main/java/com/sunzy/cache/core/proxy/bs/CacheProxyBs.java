@@ -42,6 +42,13 @@ public class CacheProxyBs {
     @SuppressWarnings("all")
     private final ICacheInterceptor persistInterceptor = CacheInterceptors.aof();
 
+
+    /**
+     * 持久化监听器
+     */
+    @SuppressWarnings("all")
+    private final ICacheInterceptor evictInterceptor = CacheInterceptors.evict();
+
     public static CacheProxyBs newInstance(){
         return new CacheProxyBs();
     }
@@ -113,6 +120,14 @@ public class CacheProxyBs {
                     persistInterceptor.before(interceptorContext);
                 } else {
                     persistInterceptor.after(interceptorContext);
+                }
+            }
+            // evict监听器
+            if(cacheInterceptor.evict()){
+                if(before) {
+                    evictInterceptor.before(interceptorContext);
+                } else {
+                    evictInterceptor.after(interceptorContext);
                 }
             }
         }

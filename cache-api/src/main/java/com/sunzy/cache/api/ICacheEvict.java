@@ -11,4 +11,15 @@ public interface ICacheEvict<K, V> {
      */
     ICacheEntry<K,V> evict(final ICacheEvictContext<K, V> context);
 
+    /**
+     * 更新key
+     * @param key key
+     */
+    void update(final K key);
+
+    /**
+     * 删除key
+     * @param key key
+     */
+    void remove(final K key);
 }

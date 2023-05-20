@@ -93,12 +93,12 @@ public interface ICache<K, V> extends Map<K, V> {
      * @since 0.0.10
      */
     ICachePersist<K,V> persist();
-//
-//    /**
-//     * 淘汰策略
-//     * @return 淘汰
-//     * @since 0.0.11
-//     */
-//    ICacheEvict<K,V> evict();
+
+    /**
+     * 淘汰策略
+     * @return 淘汰
+     * @since 0.0.11
+     */
+    ICacheEvict<K,V> evict();
 
 }

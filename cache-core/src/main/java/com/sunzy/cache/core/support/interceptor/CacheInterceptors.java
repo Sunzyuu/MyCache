@@ -3,6 +3,7 @@ package com.sunzy.cache.core.support.interceptor;
 import com.sunzy.cache.api.ICacheInterceptor;
 import com.sunzy.cache.core.support.interceptor.aof.CacheInterceptorAof;
 import com.sunzy.cache.core.support.interceptor.common.CacheInterceptorCost;
+import com.sunzy.cache.core.support.interceptor.evict.CacheInterceptorEvict;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,5 +41,16 @@ public class CacheInterceptors {
     @SuppressWarnings("all")
     public static ICacheInterceptor aof() {
         return new CacheInterceptorAof();
+    }
+
+
+    /**
+     * 驱除策略拦截器
+     * @return 结果
+     * @since 0.0.11
+     */
+    @SuppressWarnings("all")
+    public static ICacheInterceptor evict() {
+        return new CacheInterceptorEvict();
     }
 }

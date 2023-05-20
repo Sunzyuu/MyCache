@@ -38,4 +38,14 @@ public class CacheEvictFIFO<K,V> implements ICacheEvict<K, V> {
 
         return result;
     }
+
+    @Override
+    public void update(K key) {
+
+    }
+
+    @Override
+    public void remove(K key) {
+
+    }
 }

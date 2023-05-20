@@ -15,4 +15,14 @@ public class CacheEvictNone<K,V> implements ICacheEvict<K, V> {
     public ICacheEntry<K, V> evict(ICacheEvictContext<K, V> context) {
         return null;
     }
+
+    @Override
+    public void update(K key) {
+
+    }
+
+    @Override
+    public void remove(K key) {
+
+    }
 }

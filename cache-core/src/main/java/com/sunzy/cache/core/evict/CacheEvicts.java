@@ -31,4 +31,7 @@ public class CacheEvicts {
     }
 
 
+    public static <K, V> ICacheEvict<K, V>lru() {
+        return new CacheEvictLRU<>();
+    }
 }

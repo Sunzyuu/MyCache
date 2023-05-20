@@ -63,6 +63,11 @@ public class Cache<K,V> implements ICache<K,V> {
         return this.persist;
     }
 
+    @Override
+    public ICacheEvict<K, V> evict() {
+        return this.evict;
+    }
+
 
     /**
      * 设置持久化策略
@@ -223,7 +228,7 @@ public class Cache<K,V> implements ICache<K,V> {
 
 
     @Override
-    @CacheInterceptor
+    @CacheInterceptor(evict = true)
     public V get(Object key) {
         // 为了保证数据的可用性，在获取之前刷新过期时间
         //1. 刷新所有过期信息
@@ -239,7 +244,7 @@ public class Cache<K,V> implements ICache<K,V> {
      * @return
      */
     @Override
-    @CacheInterceptor(aof = true)
+    @CacheInterceptor(aof = true, evict = true)
     public V put(K key, V value) {
         //1.1 尝试驱除
         CacheEvictContext<K,V> context = new CacheEvictContext<>();
