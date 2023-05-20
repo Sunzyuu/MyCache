@@ -39,7 +39,7 @@ public class CacheEvictLRU<K, V> implements ICacheEvict<K, V> {
      * @param key key
      */
     @Override
-    public void update(K key) {
+    public void updateKey(K key) {
         this.list.remove(key);
         this.list.add(0, key);
     }
@@ -49,7 +49,7 @@ public class CacheEvictLRU<K, V> implements ICacheEvict<K, V> {
      * @param key key
      */
     @Override
-    public void remove(K key) {
+    public void removeKey(K key) {
         this.list.remove(key);
     }
 }

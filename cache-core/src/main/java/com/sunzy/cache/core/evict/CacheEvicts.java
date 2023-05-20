@@ -31,7 +31,37 @@ public class CacheEvicts {
     }
 
 
+    /**
+     * lru驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     public static <K, V> ICacheEvict<K, V>lru() {
         return new CacheEvictLRU<>();
     }
+
+    /**
+     * lrun基于双向链表的驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V>doubleListLru() {
+        return new CacheEvictLruDoubleListMap<>();
+    }
+
+
+    /**
+     * lrun基于LinkedHashMap的驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V>linkedListHashMapLru() {
+        return new CacheEvictLruLinkedHashMap<>();
+    }
+
+
+
 }

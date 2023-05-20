@@ -4,17 +4,21 @@ import com.sunzy.cache.api.ICacheEntry;
 import com.sunzy.cache.api.ICacheEvict;
 import com.sunzy.cache.api.ICacheEvictContext;
 
-/**
- * 丢弃策略
- * @author binbin.hou
- * @since 0.0.2
- */
-public class CacheEvictNone<K,V> implements ICacheEvict<K, V> {
-
+public abstract class AbstractCacheEvict<K, V> implements ICacheEvict<K, V> {
     @Override
     public ICacheEntry<K, V> evict(ICacheEvictContext<K, V> context) {
-        return null;
+        //3. 返回结果
+        return doEvict(context);
     }
+
+
+    /**
+     * 执行移除
+     * @param context 上下文
+     * @return 结果
+     * @since 0.0.11
+     */
+    protected abstract ICacheEntry<K,V> doEvict(ICacheEvictContext<K, V> context);
 
     @Override
     public void updateKey(K key) {
