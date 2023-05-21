@@ -128,15 +128,15 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/houbb/cache</url>
-        <connection>https://github.com/houbb/cache.git</connection>
-        <developerConnection>https://houbb.github.io/</developerConnection>
+        <url>https://github.com/sunzhengyu99/MyCache</url>
+        <connection>https://github.com/sunzhengyu99/MyCache.git</connection>
+        <developerConnection>https://sunzhengyu99.github.io/</developerConnection>
     </scm>
     <developers>
         <developer>
-            <name>houbb</name>
-            <email>houbinbin.echo@gmail.com</email>
-            <url>https://houbb.github.io/</url>
+            <name>sunzy</name>
+            <email></email>
+            <url>https://sunzhengyu99.github.io/</url>
         </developer>
     </developers>
     <!--============================== ADD For sonatype END ==============================-->
