@@ -5,6 +5,7 @@ import com.sunzy.cache.annotation.CacheInterceptor;
 import com.sunzy.cache.api.*;
 import com.sunzy.cache.core.constant.enums.CacheRemoveType;
 import com.sunzy.cache.core.evict.CacheEvictContext;
+import com.sunzy.cache.core.expire.CacheExpireRandom;
 import com.sunzy.cache.core.expire.CacheExpireSort;
 import com.sunzy.cache.core.persist.InnerCachePersist;
 import com.sunzy.cache.core.proxy.CacheProxy;
@@ -93,7 +94,8 @@ public class Cache<K,V> implements ICache<K,V> {
         // 初始化过期策略
 //        this.expire = new CacheExpire<>(this);
         // 使用优化后的过期策略
-        this.expire = new CacheExpireSort<>(this);
+//        this.expire = new CacheExpireSort<>(this);
+        this.expire = new CacheExpireRandom<>(this);
 
         // 加载磁盘数据
         this.load.load(this);

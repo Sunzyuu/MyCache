@@ -155,7 +155,6 @@ public class CacheExpireSort<K, V> implements ICacheExpire<K, V> {
     /**
      * 移除过期信息
      * @param key key
-     * @since 0.0.10
      */
     private void removeExpiredKey(final K key) {
         Long expireTime = expireMap.get(key);

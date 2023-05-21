@@ -74,5 +74,33 @@ public class CacheEvicts {
     }
 
 
+    /**
+     * lru2 驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V> cacheEvictLru2() {
+        return new CacheEvictLru2<>();
+    }
 
+    /**
+     * lfu驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V> cacheEvictLfu(){
+        return new CacheEvictLfu<>();
+    }
+
+    /**
+     * lfu驱逐策略
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V> ICacheEvict<K, V> cacheEvictClock(){
+        return new CacheEvictClock<>();
+    }
 }
