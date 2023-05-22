@@ -25,7 +25,7 @@ MyCache用于实现一个可拓展的本地缓存。
 
 - 自定义注解
 
-- 单例模式，代理模式
+- 代理模式，单例模式，适配器模式
 
 内置 FIFO 和 LRU 驱除策略
 
@@ -207,11 +207,11 @@ cache.get("1");
 - 测试效果
 
 ```
-[DEBUG] [2020-09-30 17:40:11.547] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.before] - Cost start, method: put
-[DEBUG] [2020-09-30 17:40:11.551] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.after] - Cost end, method: put, cost: 10ms
+[DEBUG] [2023-04-30 17:40:11.547] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.before] - Cost start, method: put
+[DEBUG] [2023-04-30 17:40:11.551] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.after] - Cost end, method: put, cost: 10ms
 【慢日志】name: put
-[DEBUG] [2020-09-30 17:40:11.554] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.before] - Cost start, method: get
-[DEBUG] [2020-09-30 17:40:11.554] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.after] - Cost end, method: get, cost: 1ms
+[DEBUG] [2023-04-30 17:40:11.554] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.before] - Cost start, method: get
+[DEBUG] [2023-04-30 17:40:11.554] [main] [c.g.h.c.c.s.i.c.CacheInterceptorCost.after] - Cost end, method: get, cost: 1ms
 【慢日志】name: get
 ```
 
