@@ -33,27 +33,13 @@ MyCache用于实现一个可拓展的本地缓存。
 
 RDB 和 AOF 两种模式
 
-# 变更日志
-
-> [变更日志](https://github.com/houbb/cache/blob/master/doc/CHANGELOG.md)
-
 # 快速开始
 
 ## 准备
 
-JDK1.7 及其以上版本
+JDK1.8 及其以上版本
 
 Maven 3.X 及其以上版本
-
-## maven 项目依赖
-
-```xml
-<dependency>
-    <groupId>com.github.houbb</groupId>
-    <artifactId>cache-core</artifactId>
-    <version>0.0.15</version>
-</dependency>
-```
 
 ## 入门测试
 
