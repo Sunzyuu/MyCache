@@ -15,4 +15,9 @@ public class CacheSlowListener<K, V> implements ICacheSlowListener {
                 context.methodName(), JSON.toJSON(context.params()), context.costTimeMills());
     }
 
+    @Override
+    public long slowerThanMills() {
+        return 1000;
+    }
+
 }

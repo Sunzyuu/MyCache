@@ -35,7 +35,10 @@ public class CacheInterceptorCost<K, V> implements ICacheInterceptor<K, V> {
                     .params(context.params())
                     .result(context.result());
             for (ICacheSlowListener slowListener : slowListenerList) {
-                slowListener.listen(listenerContext);
+                // 超过慢日志的阈值 则认定为满操作
+                if(costMills >= slowListener.slowerThanMills()){
+                    slowListener.listen(listenerContext);
+                }
             }
         }
 
