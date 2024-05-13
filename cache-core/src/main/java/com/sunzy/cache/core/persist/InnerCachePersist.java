@@ -4,7 +4,7 @@ import com.github.houbb.log.integration.core.Log;
 import com.github.houbb.log.integration.core.LogFactory;
 import com.sunzy.cache.api.ICache;
 import com.sunzy.cache.api.ICachePersist;
-import jdk.jfr.events.ExceptionThrownEvent;
+// import jdk.jfr.events.ExceptionThrownEvent;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

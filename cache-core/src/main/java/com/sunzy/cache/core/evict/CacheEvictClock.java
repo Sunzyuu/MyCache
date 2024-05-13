@@ -30,7 +30,7 @@ public class CacheEvictClock<K, V> extends AbstractCacheEvict<K, V>{
             ICacheEntry<K, V> evictEntry = circleList.removeEldest();
             final K evictKey = evictEntry.key();
             V evictValue = cache.remove(evictKey);
-            log.debug("基于 clock 算法淘汰 key：{}, value: {}", evictKey, evictValue);
+            log.debug("淘汰 key：{}, value: {}", evictKey, evictValue);
 
             result = new CacheEntry<>(evictKey, evictValue);
         }
