@@ -26,6 +26,7 @@ public class CacheEvictLRU<K, V> implements ICacheEvict<K, V> {
         // 超出限制 移除队尾的元素
         if(cache.size() >= context.size()){
             K evictKey = list.get(list.size() - 1);
+            list.remove(list.size() - 1);
             V evictValue = cache.remove(evictKey);
             result = new CacheEntry<>(evictKey, evictValue);
         }
@@ -40,6 +41,7 @@ public class CacheEvictLRU<K, V> implements ICacheEvict<K, V> {
      */
     @Override
     public void updateKey(K key) {
+        // 将被访问的元素先从链表中删除，再加入到对头，这样就保证了最新访问的元素在队列的最前面
         this.list.remove(key);
         this.list.add(0, key);
     }

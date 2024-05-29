@@ -16,7 +16,7 @@ public class RamdonExpire {
         cache.put("C", "FIFO");
 
         cache.expire("A", 1000);
-        cache.expire("B", 10000);
+        cache.expire("B", 1000);
         cache.get("A");
         cache.get("B");
         cache.put("D", "LRU");

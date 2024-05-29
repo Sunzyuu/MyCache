@@ -34,10 +34,13 @@ public class CacheBs<K, V>{
     }
 
 
+    /**
+     * 缓存的核心，存放到HashMap中
+     */
     private Map<K, V> map = new HashMap<>();
 
     /**
-     * 大小限制
+     * 大小限制，最大为2**32 - 1
      * @since 0.0.2
      */
     private int size = Integer.MAX_VALUE;
@@ -90,7 +93,7 @@ public class CacheBs<K, V>{
     }
 
     /**
-     * 加载策略 默认为nono
+     * 加载策略 默认为none
      * @since 0.0.7
      */
     private ICacheLoad<K,V> load = CacheLoads.none();

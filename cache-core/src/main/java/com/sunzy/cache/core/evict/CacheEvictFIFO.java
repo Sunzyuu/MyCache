@@ -24,11 +24,11 @@ public class CacheEvictFIFO<K,V> implements ICacheEvict<K, V> {
             // 移除最开始的元素 利用的是 队列的后进先出的性质，所以删除的是最早加入map中的元素
             V evictValue = cache.remove(evictKey);
 
-            // 执行淘汰监听器
-            ICacheRemoveListenerContext<K,V> removeListenerContext = CacheRemoveListenerContext.<K,V>newInstance().key(evictKey).value(evictValue).type(CacheRemoveType.EVICT.code());
-            for(ICacheRemoveListener<K,V> listener : cache.removeListeners()) {
-                listener.listen(removeListenerContext);
-            }
+            // 执行淘汰监听器 后面修改为在put方法中执行
+            // ICacheRemoveListenerContext<K,V> removeListenerContext = CacheRemoveListenerContext.<K,V>newInstance().key(evictKey).value(evictValue).type(CacheRemoveType.EVICT.code());
+            // for(ICacheRemoveListener<K,V> listener : cache.removeListeners()) {
+            //     listener.listen(removeListenerContext);
+            // }
             result = new CacheEntry<>(evictKey, evictValue);
         }
 

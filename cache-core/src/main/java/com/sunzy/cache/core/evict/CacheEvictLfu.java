@@ -52,7 +52,7 @@ public class CacheEvictLfu<K, V> extends AbstractCacheEvict<K, V>{
             V evictValue = cache.remove(evictKey);
             log.debug("淘汰最小频率信息, key: {}, value: {}, freq: {}",
                     evictKey, evictValue, evictNode.frequency());
-
+            removeKey(evictKey);
             result = new CacheEntry<K, V>(evictKey, evictValue);
         }
         return result;

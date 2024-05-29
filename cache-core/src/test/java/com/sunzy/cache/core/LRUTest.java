@@ -8,13 +8,13 @@ public class LRUTest {
     public static void main(String[] args) {
         ICache<String, String> cache = CacheBs.<String,String>newInstance()
                 .size(3)
-//                .evict(CacheEvicts.lru())
-//                .evict(CacheEvicts.doubleListLru())
+               // .evict(CacheEvicts.lru())
+               .evict(CacheEvicts.doubleListLru())
 //                .evict(CacheEvicts.linkedListHashMapLru())
 //                .evict(CacheEvicts.cacheEvict2Q())
 //                .evict(CacheEvicts.cacheEvictLru2())
-//                .evict(CacheEvicts.cacheEvictLfu())
-                .evict(CacheEvicts.cacheEvictClock())
+               // .evict(CacheEvicts.cacheEvictLfu())
+//                 .evict(CacheEvicts.cacheEvictClock())
                 .build();
 
         cache.put("A", "hello");

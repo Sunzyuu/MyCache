@@ -250,7 +250,9 @@ public class Cache<K,V> implements ICache<K,V> {
     public V put(K key, V value) {
         //1.1 尝试驱除
         CacheEvictContext<K,V> context = new CacheEvictContext<>();
+        // 初始化驱逐时所需的上下文信息，包含cache的大小限制，以及存储cache的this
         context.key(key).size(sizeLimit).cache(this);
+        // put时向其中添加一个元素，此时如果有淘汰的元素，驱逐的结果应该也是一个
         ICacheEntry<K, V> evictEntry = evict.evict(context);
 
         // 添加拦截器调用

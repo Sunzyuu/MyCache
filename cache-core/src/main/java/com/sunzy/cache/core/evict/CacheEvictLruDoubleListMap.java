@@ -58,6 +58,7 @@ public class CacheEvictLruDoubleListMap<K, V> extends AbstractCacheEvict<K, V>{
 
             K evictKey = tailPre.key();
             V removeValue = cache.remove(evictKey);
+            removeKey(evictKey);
             result = new CacheEntry<>(evictKey, removeValue);
         }
 

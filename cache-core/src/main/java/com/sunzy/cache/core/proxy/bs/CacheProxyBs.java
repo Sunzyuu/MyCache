@@ -69,6 +69,7 @@ public class CacheProxyBs {
      */
     @SuppressWarnings("all")
     public Object execute() throws Throwable {
+        // 开始时间
         long startMills = System.currentTimeMillis();
         final ICache cache = context.target();
         CacheInterceptorContext interceptorContext = CacheInterceptorContext.newInstance()
@@ -76,11 +77,12 @@ public class CacheProxyBs {
                 .method(context.method())
                 .params(context.params())
                 .cache(context.target());
-
+        // 获取注解信息
         CacheInterceptor cacheInterceptor = context.interceptor();
         this.interceptorHandler(cacheInterceptor, interceptorContext, cache, true);
-
+        //通过反射调用原生方法
         Object result = context.process();
+        // 结束时间
         final long endMills = System.currentTimeMillis();
         interceptorContext.endMills(endMills).result(result);
 

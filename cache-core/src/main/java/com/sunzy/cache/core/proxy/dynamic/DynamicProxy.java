@@ -32,8 +32,6 @@ public class DynamicProxy implements InvocationHandler, ICacheProxy {
     }
 
     /**
-     * 这种方式虽然实现了异步执行，但是存在一个缺陷：
-     * 强制用户返回值为 Future 的子类。
      *
      * 如何实现不影响原来的值，要怎么实现呢？
      * @param proxy 原始对象
